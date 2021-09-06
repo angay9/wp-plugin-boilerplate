@@ -7,6 +7,20 @@ use PluginBoilerplate\Settings\Settings;
 class Plugin 
 {
     /**
+     * Singletons
+     *
+     * @var array
+     */
+    protected static $container = [];
+
+    /**
+     * Singleton global services
+     *
+     * @var array
+     */
+    protected static $singletons = [];
+
+    /**
      * Plugin components
      *
      * @var array
@@ -119,5 +133,44 @@ class Plugin
         foreach ($this->components as $component) {
             new $component();
         }
+    }
+
+        /**
+     * Get a singleton servce
+     *
+     * @param string $class
+     * @return mixed
+     */
+    public static function get($class)
+    {
+        if (! class_exists($class) || ! in_array($class, static::$singletons)) {
+            return null;
+        }
+
+        if (! isset(static::$container[$class])) {
+            static::$container[$class] = new $class;
+        }
+
+        return static::$container[$class];
+    }
+
+    /**
+     * Get Plugin Url
+     *
+     * @return string
+     */
+    public static function pluginUrl()
+    {
+        return plugin_dir_url(__FILE__);
+    }
+
+    /**
+     * Get Plugin Path
+     *
+     * @return string
+     */
+    public static function pluginDir()
+    {
+        return plugin_dir_path(__FILE__);
     }
 }
