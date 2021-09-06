@@ -78,3 +78,12 @@ if (! function_exists('pb_config')) {
         return pb_array_get($config, $key, $default);
     }
 }
+
+
+if (! function_exists('pb_log')) {
+    function pb_log(array $data = [], $append = true, $filename = 'logs.txt') {
+        $file = __DIR__ . '/../' . $filename;
+
+        file_put_contents($file, date('Y-m-d H:i:s') . ': ' . json_encode($data) . "\n", $append ? FILE_APPEND : 0);
+    }
+}

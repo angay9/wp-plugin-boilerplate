@@ -21,7 +21,7 @@ class Plugin
      * @var array
      */
     protected $requiredPlugins = [
-        'advanced-custom-fields/acf.php' => 'Advanced Custom Fields',
+        // 'advanced-custom-fields/acf.php' => 'Advanced Custom Fields',
     ];
 
     /**
