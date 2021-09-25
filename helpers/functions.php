@@ -86,3 +86,24 @@ if (! function_exists('pb_log')) {
         file_put_contents($file, current_time('Y-m-d H:i:s') . ': ' . json_encode($data) . "\n", $append ? FILE_APPEND : 0);
     }
 }
+
+if (! function_exists('pb_array_first')) {
+    /**
+     * Return the first element in an array passing a given truth test.
+     *
+     * @param  array $array
+     * @param  \Closure $callback
+     * @param  mixed $default
+     * @return mixed
+     */
+    function pb_array_first($array, $callback, $default = null)
+    {
+        foreach ($array as $key => $value) {
+            if (call_user_func($callback, $key, $value)) {
+                return $value;
+            }
+        }
+
+        return $default;
+    }
+}
