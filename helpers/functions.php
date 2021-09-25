@@ -107,3 +107,27 @@ if (! function_exists('pb_array_first')) {
         return $default;
     }
 }
+
+if (! function_exists('pb_user_has_role')) {
+    function pb_user_has_role($roles, $user = null) {
+        if (! $user && ! is_user_logged_in()) {
+            return false;
+        }
+
+        if (! $user) {
+            $user = wp_get_current_user();
+        }
+
+        $has_role = false;
+        $roles = (array) $roles;
+        
+        foreach($roles as $role) {
+            if (in_array($role, (array)$user->roles)) {
+                $has_role = true;
+                break;
+            }
+        }
+
+        return $has_role;
+    }
+}
