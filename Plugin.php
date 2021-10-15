@@ -78,7 +78,7 @@ class Plugin
 
             printf(
                 '<div class="notice notice-error is-dismissible"><p>%s</p></div>',
-                __("Plugin boilerplate requires <strong>{$names}</strong> to be active", 'asf-customizations')
+                __("Plugin boilerplate requires <strong>{$names}</strong> to be active", 'plugin-boilerplate')
             );
     
         });
