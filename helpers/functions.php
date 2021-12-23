@@ -4,6 +4,15 @@ if (! function_exists('pb_render')) {
     function pb_render($view, array $args = []) {
         ob_start();
         extract($args);       
+        
+        $templatePath = 'plugin-boilerplate/' . $view;
+        $template = locate_template($templatePath);
+
+        if ($template) {
+            require $template;
+
+            return ob_get_clean();
+        }
 
         $file_path = pb_get_view_path($view);
 
