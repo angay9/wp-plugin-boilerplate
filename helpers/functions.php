@@ -162,3 +162,16 @@ if (! function_exists('pb_get_user_ip')) {
         return $ip_addr;
     }
 }
+
+
+if (! function_exists('pb_get_option')) {
+    function pb_get_option($key, $default = null) {
+        static $options = null;
+
+        if (is_null($options)) {
+            $options = get_option('pb_customizations');
+        }
+
+        return isset($options[$key]) ? $options[$key] : $default;
+    }
+}
