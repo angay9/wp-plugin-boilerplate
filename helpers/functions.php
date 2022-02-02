@@ -89,8 +89,15 @@ if (! function_exists('pb_config')) {
 }
 
 if (! function_exists('pb_log')) {
-    function pb_log($data, $append = true, $filename = 'logs.txt') {
-        $file = __DIR__ . '/../' . $filename;
+    function pb_log($data, $append = true, $filename = 'logs.log') {
+        $dir = wp_get_upload_dir();
+        $dir = $dir['basedir'] . '/plugin-boilerplate/';
+
+        if (! file_exists($dir)) {
+            mkdir($dir);
+        }
+
+        $file = $dir . $filename;
 
         file_put_contents($file, current_time('Y-m-d H:i:s') . ': ' . json_encode($data) . "\n", $append ? FILE_APPEND : 0);
     }
