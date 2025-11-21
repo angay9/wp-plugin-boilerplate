@@ -121,6 +121,14 @@ class Plugin
     public function addAdminAssets()
     {
         // Add admin assets
+        wp_enqueue_style('farbtastic');
+        wp_enqueue_script('farbtastic');
+
+        // We're including the WP media scripts here because they're needed for the image upload field
+        // If you're not including an image upload then you can leave this function call out
+        wp_enqueue_media();
+
+        wp_enqueue_script('wpt-admin-js', plugin_dir_url(__FILE__) . 'assets/js/settings.js', array('farbtastic', 'jquery'), '1.0.0');
     }
 
     /**

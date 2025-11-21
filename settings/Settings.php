@@ -10,69 +10,70 @@ namespace PluginBoilerplate\Settings;
 
 class Settings 
 {
-	protected $settings;
+    protected $settings;
 
-    protected $optionName = 'plugin_settings';
+    protected $optionName = 'plugin_boilerplate_settings';
 
-    protected $title = 'Plugin Settings';
+    protected $title = 'Plugin Boilerplate Settings';
 
     protected $fields = [];
 
     public function __construct() 
     {
-		add_action('admin_menu', [$this, 'pbSettingsAddPluginPage']);
-        add_action('admin_init', [$this, 'pbSettingsPageInit']);
+        add_action('admin_menu', [$this, 'settingsAddPluginPage']);
+        add_action('admin_init', [$this, 'settingsPageInit']);
     }
 
-	public function pbSettingsAddPluginPage() {
-		add_menu_page(
-			$this->title, // page_title
-			$this->title, // menu_title
-			'manage_options', // capability
-			'pb-settings', // menu_slug
-			[$this, 'pbSettingsAddAdminPage'], // function
-			'dashicons-admin-generic', // icon_url
-			81 // position
+    public function settingsAddPluginPage() {
+        add_menu_page(
+            $this->title, // page_title
+            $this->title, // menu_title
+            'manage_options', // capability
+            'pb-settings', // menu_slug
+            [$this, 'settingsAddAdminPage'], // function
+            'dashicons-admin-generic', // icon_url
+            81 // position
        );
     }
 
-	public function pbSettingsAddAdminPage() {
-		$this->settings = get_option($this->optionName); ?>
+    public function settingsAddAdminPage() {
+        $this->settings = get_option($this->optionName); ?>
 
-		<div class="wrap">
-			<h2><?php echo $this->title; ?></h2>
-			<p></p>
-			<?php settings_errors(); ?>
+        <div class="wrap">
+            <h2><?php echo $this->title; ?></h2>
+            <p></p>
+            <?php settings_errors(); ?>
 
-			<form method="post" action="options.php">
-				<?php
-					settings_fields('pb_settings_option_group');
-					do_settings_sections('pb-settings');
-					submit_button();
-				?>
-			</form>
-		</div>
-	<?php }
+            <form method="post" action="options.php">
+                <?php
+                    settings_fields('pb_settings_option_group');
+                    do_settings_sections('pb-settings');
+                    submit_button();
+                ?>
+            </form>
+        </div>
+    <?php }
 
-	public function pbSettingsPageInit() {
-		register_setting(
-			'pb_settings_option_group', // option_group
-			$this->optionName, // option_name
-			[$this, 'sanitize']// sanitize_callback
-		);
+    public function settingsPageInit() {
+        
+        register_setting(
+            'pb_settings_option_group', // option_group
+            $this->optionName, // option_name
+            [$this, 'sanitize']// sanitize_callback
+        );
+        $fields = [
+            // [
+            //     'id'            => 'directory_order_by_random',
+            //     'label'         => __('Order Directory By Random' , 'plugin-boilerplate'),
+            //     // 'description'    => __('Order By Random', 'plugin-boilerplate'),
+            //     'type'          => 'checkbox',
+            //     'default'       => '',
+            // ]
+        ];
 
         $this->fields['default'] = [
-            'title' => 'Default',
-            'fields' => [
-                [
-                    'id'            => 'sample_field',
-                    'label'			=> __('Some Text' , 'plugin-boilerplate'),
-                    'description'	=> __('This is a standard text field.', 'plugin-boilerplate'),
-                    'type'			=> 'text',
-                    'default'		=> '',
-                    'placeholder'	=> __('Placeholder text', 'plugin-boilerplate')
-                ]
-            ]
+            'title' => __('Settings' , 'plugin-boilerplate'),
+            'fields' => $fields
         ];
 
         foreach ($this->fields as $section => $config) {
@@ -103,11 +104,13 @@ class Settings
         
     }
     
-	public function sanitize($input) {
-        $sanitary_values = [];
+    public function sanitize($input) {
+
         $sanitize_fields = [
-            'sample_field',
+            // 'directory_order_by_random',
         ];
+
+        $sanitary_values = [];
 
         foreach ($sanitize_fields as $field) {
             if (is_array($input[$field])) {
@@ -117,9 +120,9 @@ class Settings
                 $sanitary_values[$field] = sanitize_text_field($input[$field]);
             }
         }
-
-		return $sanitary_values;
-	}
+        
+        return $sanitary_values;
+    }
 
     public function displayField($field) 
     {
@@ -127,117 +130,132 @@ class Settings
         $option = pb_array_get($this->settings, $field['id'], '');
         $html = '';
 
-		$data = '';
+        $data = '';
 
-		if (isset($field['default'])) {
-			$data = $field['default'];
-			if ($option) {
-				$data = $option;
-			}
-		}
+        if (isset($field['default'])) {
+            $data = $field['default'];
+            if ($option) {
+                $data = $option;
+            }
+        }
 
-		switch ($field['type']) {
+        switch ($field['type']) {
 
-			case 'text':
-			case 'password':
-			case 'number':
-				$html .= '<input id="' . esc_attr($field['id']) . '" type="' . $field['type'] . '" name="' . esc_attr($optionName) . '" placeholder="' . esc_attr($field['placeholder']) . '" value="' . $data . '"/>' . "\n";
-			break;
+            case 'text':
+            case 'password':
+            case 'number':
+                $html .= '<input id="' . esc_attr($field['id']) . '" type="' . $field['type'] . '" name="' . esc_attr($optionName) . '" placeholder="' . esc_attr($field['placeholder']) . '" value="' . $data . '"/>' . "\n";
+            break;
 
-			case 'text_secret':
-				$html .= '<input id="' . esc_attr($field['id']) . '" type="text" name="' . esc_attr($optionName) . '" placeholder="' . esc_attr($field['placeholder']) . '" value=""/>' . "\n";
-			break;
+            case 'text_secret':
+                $html .= '<input id="' . esc_attr($field['id']) . '" type="text" name="' . esc_attr($optionName) . '" placeholder="' . esc_attr($field['placeholder']) . '" value=""/>' . "\n";
+            break;
 
-			case 'textarea':
-				$html .= '<textarea id="' . esc_attr($field['id']) . '" rows="5" cols="50" name="' . esc_attr($optionName) . '" placeholder="' . esc_attr($field['placeholder']) . '">' . $data . '</textarea><br/>'. "\n";
-			break;
+            case 'textarea':
+                $html .= '<textarea id="' . esc_attr($field['id']) . '" rows="5" cols="50" name="' . esc_attr($optionName) . '" placeholder="' . esc_attr($field['placeholder']) . '">' . $data . '</textarea><br/>'. "\n";
+            break;
 
-			case 'checkbox':
-				$checked = '';
-				if ($option && 'on' == $option){
-					$checked = 'checked="checked"';
-				}
-				$html .= '<input id="' . esc_attr($field['id']) . '" type="' . $field['type'] . '" name="' . esc_attr($optionName) . '" ' . $checked . '/>' . "\n";
-			break;
+            case 'wysiwyg':
+                $html .= wp_editor($data, $field['id'], [
+                    'wpautop'       => true,
+                    'media_buttons' => true,
+                    'textarea_name' => $optionName,
+                    // 'editor_class'  => 'my_custom_class',
+                    'textarea_rows' => 10
+                ]);
+                // $html .= '<textarea id="' . esc_attr($field['id']) . '" rows="10" cols="50" name="' . esc_attr($optionName) . '" placeholder="' . esc_attr($field['placeholder']) . '">' . $data . '</textarea><br/>'. "\n";
+            break;
 
-			case 'checkbox_multi':
-				foreach($field['options'] as $k => $v) {
-					$checked = false;
-					if (in_array($k, $data)) {
-						$checked = true;
-					}
-					$html .= '<label for="' . esc_attr($field['id'] . '_' . $k) . '"><input type="checkbox" ' . checked($checked, true, false) . ' name="' . esc_attr($optionName) . '[]" value="' . esc_attr($k) . '" id="' . esc_attr($field['id'] . '_' . $k) . '" /> ' . $v . '</label> ';
-				}
-			break;
+            case 'checkbox':
+                $checked = '';
+                if ($option && 'on' == $option){
+                    $checked = 'checked="checked"';
+                }
+                $html .= '<input id="' . esc_attr($field['id']) . '" type="' . $field['type'] . '" name="' . esc_attr($optionName) . '" ' . $checked . '/>' . "\n";
+            break;
 
-			case 'radio':
-				foreach($field['options'] as $k => $v) {
-					$checked = false;
-					if ($k == $data) {
-						$checked = true;
-					}
-					$html .= '<label for="' . esc_attr($field['id'] . '_' . $k) . '"><input type="radio" ' . checked($checked, true, false) . ' name="' . esc_attr($optionName) . '" value="' . esc_attr($k) . '" id="' . esc_attr($field['id'] . '_' . $k) . '" /> ' . $v . '</label> ';
-				}
-			break;
+            case 'checkbox_multi':
+                foreach($field['options'] as $k => $v) {
+                    $checked = false;
+                    if (in_array($k, $data)) {
+                        $checked = true;
+                    }
+                    $html .= '<label for="' . esc_attr($field['id'] . '_' . $k) . '"><input type="checkbox" ' . checked($checked, true, false) . ' name="' . esc_attr($optionName) . '[]" value="' . esc_attr($k) . '" id="' . esc_attr($field['id'] . '_' . $k) . '" /> ' . $v . '</label> ';
+                }
+            break;
 
-			case 'select':
-				$html .= '<select name="' . esc_attr($optionName) . '" id="' . esc_attr($field['id']) . '">';
-				foreach($field['options'] as $k => $v) {
-					$selected = false;
-					if ($k == $data) {
-						$selected = true;
-					}
-					$html .= '<option ' . selected($selected, true, false) . ' value="' . esc_attr($k) . '">' . $v . '</option>';
-				}
-				$html .= '</select> ';
-			break;
+            case 'radio':
+                foreach($field['options'] as $k => $v) {
+                    $checked = false;
+                    if ($k == $data) {
+                        $checked = true;
+                    }
+                    $html .= '<label for="' . esc_attr($field['id'] . '_' . $k) . '"><input type="radio" ' . checked($checked, true, false) . ' name="' . esc_attr($optionName) . '" value="' . esc_attr($k) . '" id="' . esc_attr($field['id'] . '_' . $k) . '" /> ' . $v . '</label> ';
+                }
+            break;
 
-			case 'select_multi':
-				$html .= '<select name="' . esc_attr($optionName) . '[]" id="' . esc_attr($field['id']) . '" multiple="multiple">';
-				foreach($field['options'] as $k => $v) {
-					$selected = false;
-					if (in_array($k, $data)) {
-						$selected = true;
-					}
-					$html .= '<option ' . selected($selected, true, false) . ' value="' . esc_attr($k) . '" />' . $v . '</label> ';
-				}
-				$html .= '</select> ';
-			break;
+            case 'select':
+                $html .= '<select name="' . esc_attr($optionName) . '" id="' . esc_attr($field['id']) . '">';
+                foreach($field['options'] as $k => $v) {
+                    $selected = false;
+                    if ($k == $data) {
+                        $selected = true;
+                    }
+                    $html .= '<option ' . selected($selected, true, false) . ' value="' . esc_attr($k) . '">' . $v . '</option>';
+                }
+                $html .= '</select> ';
+            break;
 
-			case 'image':
-				$image_thumb = '';
-				if ($data) {
-					$image_thumb = wp_get_attachment_thumb_url($data);
-				}
-				$html .= '<img id="' . $optionName . '_preview" class="image_preview" src="' . $image_thumb . '" /><br/>' . "\n";
-				$html .= '<input id="' . $optionName . '_button" type="button" data-uploader_title="' . __('Upload an image' , 'plugin_textdomain') . '" data-uploader_button_text="' . __('Use image' , 'plugin_textdomain') . '" class="image_upload_button button" value="'. __('Upload new image' , 'plugin_textdomain') . '" />' . "\n";
-				$html .= '<input id="' . $optionName . '_delete" type="button" class="image_delete_button button" value="'. __('Remove image' , 'plugin_textdomain') . '" />' . "\n";
-				$html .= '<input id="' . $optionName . '" class="image_data_field" type="hidden" name="' . $optionName . '" value="' . $data . '"/><br/>' . "\n";
-			break;
+            case 'select_multi':
+                $html .= '<select name="' . esc_attr($optionName) . '[]" id="' . esc_attr($field['id']) . '" multiple="multiple">';
+                foreach($field['options'] as $k => $v) {
+                    $selected = false;
+                    if (in_array($k, $data)) {
+                        $selected = true;
+                    }
+                    $html .= '<option ' . selected($selected, true, false) . ' value="' . esc_attr($k) . '" />' . $v . '</label> ';
+                }
+                $html .= '</select> ';
+            break;
 
-			case 'color':
-				?><div class="color-picker" style="position:relative;">
-			        <input type="text" name="<?php esc_attr_e($optionName); ?>" class="color" value="<?php esc_attr_e($data); ?>" />
-			        <div style="position:absolute;background:#FFF;z-index:99;border-radius:100%;" class="colorpicker"></div>
-			    </div>
-			    <?php
-			break;
+            case 'image':
+                $image_thumb = '';
+                if ($data) {
+                    $image_thumb = wp_get_attachment_thumb_url($data);
+                }
 
-		}
+                $opt = str_replace('[', '', $optionName);
+                $opt = str_replace(']', '', $opt);
 
-		switch ($field['type']) {
+                $html .= '<img id="' . $opt . '_preview" class="image_preview" src="' . $image_thumb . '" style="max-width: 200px" /><br/>' . "\n";
+                $html .= '<input id="' . $opt . '_button" type="button" data-uploader_title="' . __('Upload an image' , 'plugin_textdomain') . '" data-uploader_button_text="' . __('Use image' , 'plugin_textdomain') . '" class="image_upload_button button" value="'. __('Upload new image' , 'plugin_textdomain') . '" />' . "\n";
+                $html .= '<input id="' . $opt . '_delete" type="button" class="image_delete_button button" value="'. __('Remove image' , 'plugin_textdomain') . '" />' . "\n";
+                $html .= '<input id="' . $opt . '" class="image_data_field" type="hidden" name="' . $optionName . '" value="' . $data . '"/><br/>' . "\n";
+            break;
 
-			case 'checkbox_multi':
-			case 'radio':
-			case 'select_multi':
-				$html .= '<br/><p class="description">' . $field['description'] . '</p>';
-			break;
+            case 'color':
+                ?><div class="color-picker" style="position:relative;">
+                    <input type="text" name="<?php esc_attr_e($optionName); ?>" class="color" value="<?php esc_attr_e($data); ?>" />
+                    <div style="position:absolute;background:#FFF;z-index:99;border-radius:100%;" class="colorpicker"></div>
+                </div>
+                <?php
+            break;
 
-			default:
-				$html .= '<label for="' . esc_attr($field['id']) . '"><p class="description">' . $field['description'] . '</p></label>' . "\n";
-			break;
-		}
+        }
 
-		echo $html;
-	}
+        switch ($field['type']) {
+
+            case 'checkbox_multi':
+            case 'radio':
+            case 'select_multi':
+                $html .= '<br/><p class="description">' . $field['description'] . '</p>';
+            break;
+
+            default:
+                $html .= '<label for="' . esc_attr($field['id']) . '"><p class="description">' . $field['description'] . '</p></label>' . "\n";
+            break;
+        }
+
+        echo $html;
+    }
 }
